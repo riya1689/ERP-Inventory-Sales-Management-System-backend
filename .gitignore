@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+jspm_packages/
+.npm/
+
+# Environment Variables & Secrets 
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime files and process managers
+pids
+*.pid
+*.seed
+*.pid.lock
+.pm2/
+
+# Build and Compilation Directories
+dist/
+build/
+out/
+.next/
+
+# Local Testing and Coverage
+coverage/
+.nyc_output/
+*.test.js.snap
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs and Code Editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local Uploads
+uploads/
+public/uploads/
