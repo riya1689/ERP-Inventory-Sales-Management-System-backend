@@ -27,7 +27,7 @@ app.use('/api/categories', categoryRoutes);
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({
     status: 'success',
-    message: 'Mini ERP API is running perfectly!',
+    message: 'ERP API is running perfectly!',
   });
 });
 
