@@ -21,18 +21,17 @@ export const getDashboardStats = async (req: Request, res: Response, next: NextF
     ]);
     const totalRevenue = revenueAggregation.length > 0 ? revenueAggregation[0].totalRevenue : 0;
 
-    const eightDaysAgo = new Date();
-    eightDaysAgo.setDate(eightDaysAgo.getDate() - 7);
+    const startDate = new Date('2026-07-01T00:00:00.000Z');
 
-    const dailyRevenue = await Sale.aggregate([
+    const monthlyRevenue = await Sale.aggregate([
       {
         $match: {
-          createdAt: { $gte: eightDaysAgo }
+          createdAt: { $gte: startDate }
         }
       },
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
           revenue: { $sum: "$grandTotal" }
         }
       },
@@ -41,10 +40,35 @@ export const getDashboardStats = async (req: Request, res: Response, next: NextF
       }
     ]);
 
-    const chartData = dailyRevenue.map((data) => ({
-      name: data._id.substring(5),
-      revenue: data.revenue
-    }));
+    const revenueMap = new Map();
+    monthlyRevenue.forEach((item) => {
+      revenueMap.set(item._id, item.revenue);
+    });
+
+    const chartData = [];
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+
+    let iterYear = 2026;
+    let iterMonth = 6; // July is index 6
+
+    while (iterYear < currentYear || (iterYear === currentYear && iterMonth <= currentMonth)) {
+      const iterDate = new Date(iterYear, iterMonth, 1);
+      const monthStr = `${iterYear}-${String(iterMonth + 1).padStart(2, '0')}`;
+      const monthName = iterDate.toLocaleString('default', { month: 'short' });
+      
+      chartData.push({
+        name: `${monthName} ${iterYear}`,
+        revenue: revenueMap.get(monthStr) || 0
+      });
+
+      iterMonth++;
+      if (iterMonth > 11) {
+        iterMonth = 0;
+        iterYear++;
+      }
+    }
 
     const lowStockProducts = await Product.find({ stockQuantity: { $lt: 5 } })
       .select('name sku stockQuantity productImage')
